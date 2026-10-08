@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agarwal Woodcraft - Wood Plank Calculator</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:#222;min-height:100vh;background-color:#7a4b2a;background-image:linear-gradient(rgba(255,248,238,.88),rgba(255,248,238,.88)),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='600' viewBox='0 0 900 600'%3E%3Crect width='900' height='600' fill='%237b4a28'/%3E%3Cg fill='none' stroke-linecap='round'%3E%3Cpath d='M-50 70 C120 15 220 120 390 65 S690 15 950 85' stroke='%23915f37' stroke-width='34' opacity='.75'/%3E%3Cpath d='M-50 145 C140 80 245 185 430 125 S710 90 950 155' stroke='%23643a20' stroke-width='18' opacity='.7'/%3E%3Cpath d='M-50 225 C100 165 260 260 430 210 S730 170 950 235' stroke='%23a87345' stroke-width='28' opacity='.65'/%3E%3Cpath d='M-50 320 C120 260 250 350 430 300 S720 270 950 330' stroke='%235b331d' stroke-width='15' opacity='.65'/%3E%3Cpath d='M-50 420 C120 355 280 460 450 400 S720 365 950 430' stroke='%23a06a3d' stroke-width='38' opacity='.62'/%3E%3Cpath d='M-50 510 C150 445 260 550 470 490 S730 460 950 525' stroke='%23623820' stroke-width='20' opacity='.7'/%3E%3C/g%3E%3C/svg%3E");background-attachment:fixed;background-size:cover}
+  .app{max-width:620px;margin:0 auto;padding:18px;position:relative}
+  h1{font-size:24px;margin:4px 0 4px;color:#3d2415}
+  .sub{color:#5f5148;margin:0 0 18px;font-size:14px}
+  .card{background:rgba(255,255,255,.96);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 5px 20px rgba(55,30,15,.14);border:1px solid rgba(120,75,40,.08)}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  label{font-size:13px;font-weight:600;color:#555}
+  input{width:100%;margin-top:6px;padding:12px;border:1px solid #ddd;border-radius:10px;font-size:16px;background:#fff}
+  .rate{margin-top:12px}
+  button{border:0;border-radius:10px;padding:12px 15px;font-size:16px;font-weight:600;cursor:pointer}
+  .add{width:100%;background:#3b2416;color:#fff;margin-top:14px}
+  .reset{background:#eee;color:#222;width:100%;margin-top:10px}
+  .piece{border-top:1px solid #eee;padding-top:12px;margin-top:12px}
+  .piece:first-child{border-top:0;padding-top:0;margin-top:0}
+  .piecehead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .remove{background:#fff0f0;color:#b00020;padding:7px 10px;font-size:13px}
+  .calc{margin-top:10px;background:#f7f7f7;border-radius:10px;padding:10px;font-size:14px;color:#555}
+  .result{display:flex;justify-content:space-between;gap:12px;margin:7px 0}
+  .grand{font-size:20px;font-weight:800;padding-top:10px;border-top:1px solid #ddd;margin-top:10px}
+  .error{color:#b00020;font-size:13px;margin-top:8px;min-height:18px}
+  .note{font-size:12px;color:#665950;line-height:1.5;text-align:center}.brand{background:linear-gradient(135deg,#4a2918,#7a4a28);color:#fff;border-radius:16px;padding:15px 16px;margin-bottom:14px;box-shadow:0 5px 18px rgba(55,30,15,.18)}.brand h2{margin:0;font-size:18px;letter-spacing:.3px}.brand p{margin:4px 0 0;font-size:12px;opacity:.9}.footer{text-align:center;color:#5b4334;font-size:12px;padding:6px 0 22px}.footer b{color:#3d2415}
+
+.homeBtn{display:block;text-align:center;text-decoration:none;background:#222;color:#fff;border-radius:10px;padding:12px 15px;font-size:16px;font-weight:700;margin:0 0 14px}
+</style>
+</head>
+<body>
+<div class="app">
+<a class="homeBtn" href="./">← Home</a>
+  <div class="brand"><h2>🪵 Agarwal Woodcraft Industries</h2><p>Mannargudi • Wood Measurement Calculator</p></div>
+  <h1>Wood Measurement Calculator</h1>
+  <p class="sub">Calculate square feet and price for multiple wood pieces.</p>
+
+  <div class="card">
+    <label>Rate per sq.ft (₹)
+      <input id="rate" type="number" min="0" step="0.01" value="100">
+    </label>
+  </div>
+
+  <div class="card">
+    <div id="pieces"></div>
+    <button class="add" id="add">＋ Add Wood Piece</button>
+  </div>
+
+  <div class="card">
+    <div class="result"><span>Total Square Feet</span><strong id="totalSqft">0.00 sq.ft</strong></div>
+    <div class="result grand"><span>Grand Total</span><strong id="grandTotal">₹0.00</strong></div>
+    <button class="reset" id="reset">Reset</button>
+  </div>
+
+  <p class="note">
+    Formula: <b>Length (ft) × Width (inches) ÷ 12 = Square Feet</b><br>
+    Example: 5 ft × 20 in ÷ 12 = 8.33 sq.ft.
+  </p>
+</div>
+  <div class="footer">Created by <b>Anishkumar Agarwal</b></div>
+</div>
+
+<script>
+const piecesEl = document.getElementById('pieces');
+const rateEl = document.getElementById('rate');
+let pieceCount = 0;
+
+function addPiece(length='', width='') {
+  pieceCount++;
+  const div = document.createElement('div');
+  div.className = 'piece';
+  div.dataset.id = pieceCount;
+  div.innerHTML = `
+    <div class="piecehead">
+      <strong>Piece ${pieceCount}</strong>
+      <button type="button" class="remove">Remove</button>
+    </div>
+    <div class="row">
+      <label>Length (feet)
+        <input class="length" type="number" min="0" step="0.01" placeholder="e.g. 5" value="${length}">
+      </label>
+      <label>Width (inches)
+        <input class="width" type="number" min="0" step="0.01" placeholder="e.g. 20" value="${width}">
+      </label>
+    </div>
+    <div class="calc">Area: <b class="area">0.00 sq.ft</b> · Amount: <b class="amount">₹0.00</b></div>
+    <div class="error"></div>
+  `;
+  piecesEl.appendChild(div);
+
+  div.querySelectorAll('input').forEach(i => i.addEventListener('input', calculate));
+  div.querySelector('.remove').addEventListener('click', () => {
+    div.remove();
+    renumber();
+    calculate();
+  });
+  calculate();
+}
+
+function renumber(){
+  [...piecesEl.querySelectorAll('.piece')].forEach((p,i)=>{
+    p.querySelector('.piecehead strong').textContent = `Piece ${i+1}`;
+  });
+}
+
+function calculate(){
+  const rate = Number(rateEl.value);
+  let totalSqft = 0;
+  let totalAmount = 0;
+
+  document.querySelectorAll('.piece').forEach(p=>{
+    const l = Number(p.querySelector('.length').value);
+    const w = Number(p.querySelector('.width').value);
+    const err = p.querySelector('.error');
+
+    if ((!p.querySelector('.length').value && !p.querySelector('.width').value)) {
+      err.textContent = '';
+      p.querySelector('.area').textContent = '0.00 sq.ft';
+      p.querySelector('.amount').textContent = '₹0.00';
+      return;
+    }
+
+    if (!Number.isFinite(l) || !Number.isFinite(w) || l < 0 || w < 0) {
+      err.textContent = 'Enter valid measurements.';
+      return;
+    }
+
+    err.textContent = '';
+    const sqft = l * w / 12;
+    const amount = sqft * (Number.isFinite(rate) && rate >= 0 ? rate : 0);
+    totalSqft += sqft;
+    totalAmount += amount;
+
+    p.querySelector('.area').textContent = sqft.toFixed(2) + ' sq.ft';
+    p.querySelector('.amount').textContent = '₹' + amount.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
+  });
+
+  document.getElementById('totalSqft').textContent = totalSqft.toFixed(2) + ' sq.ft';
+  document.getElementById('grandTotal').textContent = '₹' + totalAmount.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+
+document.getElementById('add').addEventListener('click',()=>addPiece());
+rateEl.addEventListener('input',calculate);
+document.getElementById('reset').addEventListener('click',()=>{
+  piecesEl.innerHTML='';
+  pieceCount=0;
+  rateEl.value='100';
+  addPiece();
+  calculate();
+});
+
+addPiece(5,20);
+</script>
+</body>
+</html>
